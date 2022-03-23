@@ -1,0 +1,66 @@
+<script src="https://developer.tingg.africa/checkout/v2/tingg-checkout.js"></script>
+
+<button class="awesome-checkout-button"></button>
+
+<script type="text/javascript">
+const payload = {
+    // un-encrypted parameters collected against a request in json format
+    merchantTransactionID: "g558k453637r22",
+    requestAmount: "900",
+    currencyCode: "KES",
+    accountNumber: "646473",
+    serviceCode: "FOODEV2675",
+    dueDate: "2022-02-06 15:33:59", //Must be a future date
+    requestDescription: "Dummy",
+    countryCode: "KE",
+    languageCode: "en",
+    payerClientCode: "",
+    MSISDN: "", //Must be a valid number
+    customerFirstName: "John",
+    customerLastName: "Smith",
+    customerEmail: "john_smith@example.com",
+    successRedirectUrl: "",
+    failRedirectUrl: "",
+    pendingRedirectUrl: "https://localhost/nodejs/success.html",
+    paymentWebhookUrl: "https://webhook.site/ae2dcb56-74ec-4142-af4a-5db37d492356"
+};
+const checkoutType = 'modal'; // or 'modal'
+
+// Render the checkout button
+Tingg.renderPayButton({
+    className: 'awesome-checkout-button', 
+    checkoutType
+});
+console.log(JSON.stringify(payload));
+document
+.querySelector('.awesome-checkout-button')
+.addEventListener('click', function () {
+    
+            //Call the encryption URL to encrypt the params and render checkout
+            function encrypt() {
+                console.log(payload)
+                return fetch(
+                    "http://localhost:3000/checkout-encryption",
+                    {
+                        method: 'POST',
+                        headers: {'Content-Type': "application/json"},
+                        body: JSON.stringify(payload),
+                        mode: 'cors'
+                    }).then(response => response.json())
+            }
+            encrypt().then(response => {
+                console.log(response);
+                    // Render the checkout page on click event
+                
+                    Tingg.renderCheckout({
+                        checkoutType,
+                        merchantProperties: response,
+                    });
+                }
+            )
+                .catch(error => console.log(error));
+        });
+
+        
+
+</script>
